@@ -1,0 +1,140 @@
+@startuml
+
+' Package declarations
+package "model" {
+    abstract class "Enemy" {
+        #radius: double
+        #color: Color
+        #problem: String
+        #solution: int
+        +{abstract} getProblem(): String
+        +{abstract} getSolution(): int
+        +draw(g: Graphics): void
+        +update(): void
+    }
+
+    class "Player" {
+        -x: double
+        -y: double
+        -health: int
+        -arrows: Vector<Arrow>
+        +move(dx: double, dy: double): void
+        +shoot(): void
+        +hit(enemy: Enemy): void
+        +heal(): void
+        +dead(): boolean
+        +draw(g: Graphics): void
+    }
+
+    class "Level" {
+        -key: int
+        -enemies: Vector<Enemy>
+        -difficulty: int
+        +update(): void
+        +drawEnemies(g: Graphics): void
+        +finished(): boolean
+        +getHitting(): Enemy
+    }
+}
+
+package "game" {
+    class "GameComponent" {
+        -world: World
+        +paintComponent(g: Graphics): void
+        +actionPerformed(e: ActionEvent): void
+    }
+
+    class "ListeningGameComponent" {
+        -world: World
+        +keyPressed(e: KeyEvent): void
+        +keyReleased(e: KeyEvent): void
+    }
+
+    class "World" {
+        -player: Player
+        -levels: Level[]
+        -level: int
+        -win: boolean
+        -lose: boolean
+        +update(): void
+        +draw(g: Graphics): void
+        +tryKey(key: int): void
+        +getLevel(): Level
+        +getWorld(): World
+    }
+}
+
+package "math" {
+    class "Addition" {
+        +Addition()
+        +getProblem(): String
+        +getSolution(): int
+    }
+
+    class "BigAddition" {
+        +BigAddition()
+        +getProblem(): String
+        +getSolution(): int
+    }
+
+    class "BigMultiplication" {
+        +BigMultiplication()
+        +getProblem(): String
+        +getSolution(): int
+    }
+
+    class "Division" {
+        +Division()
+        +getProblem(): String
+        +getSolution(): int
+    }
+
+    class "Multiplication" {
+        +Multiplication()
+        +getProblem(): String
+        +getSolution(): int
+    }
+
+    class "Subtraction" {
+        +Subtraction()
+        +getProblem(): String
+        +getSolution(): int
+    }
+}
+
+package "util" {
+    class "Util" {
+        +MAX_R: int
+        +PLAYER_RADIUS: int
+        +ARROW_LENGTH: int
+        +ARROW_SPEED: double
+        +ENEMY_FREQUENCY: double
+    }
+}
+
+' Relationships
+Enemy <|-- Addition
+Enemy <|-- BigAddition
+Enemy <|-- BigMultiplication
+Enemy <|-- Division
+Enemy <|-- Multiplication
+Enemy <|-- Subtraction
+
+World --> Player
+World --> Level
+Level --> Enemy
+GameComponent --> World
+ListeningGameComponent --> World
+
+' Notes
+note right of Enemy
+  Abstract base class for
+  all math enemies
+end note
+
+note right of World
+  Main game controller
+  managing levels and player
+end note
+
+@enduml 

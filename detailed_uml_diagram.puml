@@ -1,0 +1,133 @@
+@startuml
+
+' Package declarations
+package "com.mathhero" {
+  package "model" {
+    abstract class "Question" {
+      #id: String
+      #difficulty: int
+      #points: int
+      +{abstract} generateQuestion(): String
+      +{abstract} checkAnswer(answer: String): boolean
+      +getDifficulty(): int
+      +getPoints(): int
+    }
+
+    class "ArithmeticQuestion" {
+      -operand1: int
+      -operand2: int
+      -operator: char
+      +generateQuestion(): String
+      +checkAnswer(answer: String): boolean
+      +getOperand1(): int
+      +getOperand2(): int
+    }
+
+    class "AlgebraQuestion" {
+      -variable: char
+      -coefficient: int
+      -constant: int
+      +generateQuestion(): String
+      +checkAnswer(answer: String): boolean
+      +solveEquation(): double
+    }
+
+    class "GeometryQuestion" {
+      -shape: String
+      -dimensions: Map<String, Double>
+      +generateQuestion(): String
+      +checkAnswer(answer: String): boolean
+      +calculateArea(): double
+      +calculatePerimeter(): double
+    }
+  }
+
+  package "service" {
+    interface "QuestionService" {
+      +{abstract} getQuestion(): Question
+      +{abstract} validateAnswer(question: Question, answer: String): boolean
+      +{abstract} getQuestionsByDifficulty(difficulty: int): List<Question>
+    }
+
+    class "QuestionServiceImpl" {
+      -questionRepository: QuestionRepository
+      +getQuestion(): Question
+      +validateAnswer(question: Question, answer: String): boolean
+      +getQuestionsByDifficulty(difficulty: int): List<Question>
+      -logAnswerValidation(questionId: String, result: boolean): void
+    }
+
+    class "QuestionRepository" {
+      -questions: List<Question>
+      +save(question: Question): void
+      +findById(id: String): Question
+      +findByDifficulty(difficulty: int): List<Question>
+    }
+  }
+
+  package "exception" {
+    class "InvalidAnswerException" {
+      -message: String
+      -timestamp: LocalDateTime
+      +InvalidAnswerException(message: String)
+      +getMessage(): String
+      +getTimestamp(): LocalDateTime
+    }
+
+    class "QuestionGenerationException" {
+      -message: String
+      -errorCode: String
+      -timestamp: LocalDateTime
+      +QuestionGenerationException(message: String, errorCode: String)
+      +getMessage(): String
+      +getErrorCode(): String
+      +getTimestamp(): LocalDateTime
+    }
+  }
+
+  package "util" {
+    class "QuestionValidator" {
+      +validateAnswer(answer: String): boolean
+      +validateQuestion(question: Question): boolean
+      +sanitizeInput(input: String): String
+    }
+
+    class "ScoreCalculator" {
+      -basePoints: int
+      -timeMultiplier: double
+      +calculateScore(question: Question, timeTaken: long): int
+      +calculateBonusPoints(difficulty: int): int
+    }
+  }
+}
+
+' Relationships
+Question <|-- ArithmeticQuestion
+Question <|-- AlgebraQuestion
+Question <|-- GeometryQuestion
+
+QuestionService <|.. QuestionServiceImpl
+QuestionServiceImpl --> QuestionRepository
+QuestionServiceImpl --> QuestionValidator
+QuestionServiceImpl --> ScoreCalculator
+
+QuestionServiceImpl ..> InvalidAnswerException
+QuestionServiceImpl ..> QuestionGenerationException
+
+' Notes
+note right of Question
+  Abstract base class for all
+  mathematical questions
+end note
+
+note right of QuestionService
+  Interface defining core
+  question operations
+end note
+
+note right of QuestionValidator
+  Utility class for
+  input validation
+end note
+
+@enduml 

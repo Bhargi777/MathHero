@@ -1,0 +1,186 @@
+@startuml
+
+' Package declarations
+package "game" {
+  class MathHero {
+    - World world
+    - String typed
+    + MathHero()
+    + update()
+    + draw(Graphics g)
+    + keyTyped(KeyEvent ke)
+  }
+
+  class World {
+    + Player player
+    + Level[] levels
+    + int level
+    + boolean win
+    + boolean lose
+    + World(Player player, Level... levels)
+    + tryKey(int key)
+    + getLevel(): Level
+    + update()
+    + draw(Graphics g)
+    + getWorld(): World
+  }
+
+  class GameComponent {
+    + static int WIDTH, HEIGHT
+    # BufferedImage background
+    + int delay
+    + GameComponent(int w, int h)
+    + start()
+    + makeTestWindow(): JFrame
+    + makeFullScreenWindow(): JFrame
+    + {abstract} draw(Graphics g)
+    + {abstract} update()
+  }
+
+  class ListeningGameComponent {
+    + boolean mousePressed1, mousePressed2, mousePressed3
+    + ArrayList<String> keysPressed
+    + boolean debug
+    + int mouseX, mouseY
+    + ListeningGameComponent(int w, int h)
+    + {abstract} draw(Graphics g)
+    + {abstract} update()
+    + mouseClicked(MouseEvent e)
+    + mouseEntered(MouseEvent e)
+    + mouseExited(MouseEvent e)
+    + mousePressed(MouseEvent e)
+    + mouseReleased(MouseEvent e)
+    + mouseDragged(MouseEvent e)
+    + mouseMoved(MouseEvent e)
+    + keyPressed(KeyEvent e)
+    + keyReleased(KeyEvent e)
+    + keyTyped(KeyEvent e)
+    + isMousePressed(int b): boolean
+    + isMousePressed(): boolean
+  }
+}
+
+package "model" {
+  class Player {
+    - int health
+    - int experience
+    + Player()
+    + hit(boolean hitting)
+    + dead(): boolean
+    + heal()
+    + addExp(int exp)
+    + draw(Graphics g)
+  }
+
+  class Level {
+    - int key
+    - Vector<Enemy> enemies
+    + Level(int key, Vector<Enemy> enemies)
+    + update()
+    + drawEnemies(Graphics g)
+    + getHitting(): boolean
+    + finished(): boolean
+    + process(int answer): int
+  }
+
+  abstract class Enemy {
+    # double r, t, speed
+    # Color color
+    # int radius
+    + Enemy(double speed)
+    + update()
+    + draw(Graphics g)
+    + die()
+    + dead(): boolean
+    + hitting(): boolean
+    + {abstract} getProblem(): String
+    + {abstract} getSolution(): int
+  }
+}
+
+package "math" {
+  class Addition {
+    - String problem
+    - int solution
+    + Addition()
+    + getProblem(): String
+    + getSolution(): int
+  }
+
+  class Multiplication {
+    - String problem
+    - int solution
+    + Multiplication()
+    + getProblem(): String
+    + getSolution(): int
+  }
+
+  class Subtraction {
+    - String problem
+    - int solution
+    + Subtraction()
+    + getProblem(): String
+    + getSolution(): int
+  }
+
+  class Division {
+    - String problem
+    - int solution
+    + Division()
+    + getProblem(): String
+    + getSolution(): int
+  }
+
+  class BigAddition {
+    - String problem
+    - int solution
+    + BigAddition()
+    + getProblem(): String
+    + getSolution(): int
+  }
+
+  class BigMultiplication {
+    - String problem
+    - int solution
+    + BigMultiplication()
+    + getProblem(): String
+    + getSolution(): int
+  }
+}
+
+package "util" {
+  class Util {
+    + static final int MAX_R
+    + static final int PLAYER_RADIUS
+    + static final int ARROW_LENGTH
+    + static final double ARROW_SPEED
+    + static final double ENEMY_FREQUENCY
+  }
+}
+
+' Relationships
+MathHero *-- World : composition
+World *-- Player : composition
+World o-- Level : aggregation
+Level *-- Enemy : composition
+Enemy <|-- Addition : inheritance
+Enemy <|-- Multiplication : inheritance
+Enemy <|-- Subtraction : inheritance
+Enemy <|-- Division : inheritance
+Enemy <|-- BigAddition : inheritance
+Enemy <|-- BigMultiplication : inheritance
+GameComponent <|-- ListeningGameComponent : inheritance
+ListeningGameComponent <|-- MathHero : inheritance
+
+' Notes
+note right of Enemy
+  Abstract class representing
+  different types of math problems
+end note
+
+note right of GameComponent
+  Base class for game components
+  with rendering capabilities
+end note
+
+@enduml 
